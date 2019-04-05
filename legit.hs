@@ -1,40 +1,26 @@
 -- need to install cryptohash dependency
 import System.IO
 import System.Directory
-import Data.ByteString as BSU
+import qualified Data.ByteString.Lazy as BS
 import qualified Crypto.Hash.SHA1 as SHA1
 
--- Comprime o conteúdo do arq selecionado
-compressContent :: ByteString
--- compressContent bytestring_content =
+-- verifica se o arquivo ja fora adicionado no legit antes
+verifyPresenceInLegit :: String -> [String] -> Bool     -- funfando nice
+verifyPresenceInLegit a [] = False
+verifyPresenceInLegit a (h:t) = if (h == a) then True else verifyPresenceInLegit a t
 
--- verifica se a hash nome_aqv : conteudo já existe
-verifyPresenceInLegit :: filecontent encryptedcontent -> Bool
-
--- -- verifica se existe diferença entre o arquivo atual e na pasta legit
-verifiyDiferenceInLegit :: filecontent encryptedcontent -> Bool
-
--- vai gerar o nome encriptado para o arquivo
-genFilenameHash :: String -> String
-genFilenameHash filename = bytestringToString (SHA1.hash (stringToByteString filename))
-
--- converte string para bytestring_content
-stringToByteString :: String -> ByteString
-stringToByteString str = BSU.fromString str
-
--- converte bytestring para 
-bytestringToString :: ByteString -> String
-bytestringToString bstr = BSU.toString bstr
+-- verifica se existe diferença entre o arquivo atual e na pasta legit
+verifiyDiferenceInLegit :: String -> String -> Bool     -- funfando nice
+verifiyDiferenceInLegit a b = a == b
     
 -- Arquiva o commit como o arquivo na pasta .gitLegit
-genCommit :: 
+-- genCommit :: 
+
+-- -- transforma o conteúdo de um arquivo em uma gigantesca string
+-- fileToString filename
 
 -- -- verifica se existe a pasta .gitlegit e a cria se não existir
-createFolder = 
+-- createFolder = 
 
--- adiciona lista de arquivos para o commit
-
-
-
-gitAdd = do
-    var <- getLine
+-- gitAdd = do
+--     var <- getLine
