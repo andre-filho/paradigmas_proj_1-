@@ -5,6 +5,7 @@ import qualified Data.ByteString.Lazy as BS
 import qualified Crypto.Hash.SHA1 as SHA1
 
 -- verifica se o arquivo ja fora adicionado no legit antes
+-- chamar o segundo argumento com a funcao `lines x`
 verifyPresenceInLegit :: String -> [String] -> Bool     -- funfando nice
 verifyPresenceInLegit a [] = False
 verifyPresenceInLegit a (h:t) = if (h == a) then True else verifyPresenceInLegit a t
@@ -12,6 +13,15 @@ verifyPresenceInLegit a (h:t) = if (h == a) then True else verifyPresenceInLegit
 -- verifica se existe diferença entre o arquivo atual e na pasta legit
 verifiyDiferenceInLegit :: String -> String -> Bool     -- funfando nice
 verifiyDiferenceInLegit a b = a == b
+
+genAddHash :: String -> String -> String    -- funfando
+genAddHash a b = a ++ ":" ++ b
+
+writeAddToFile s1 s2 = do   -- funfando
+    a <- openFile "asdf.txt" AppendMode
+    let c = genAddHash s1 s2
+    hPutStrLn a c
+    hClose a 
     
 -- Arquiva o commit como o arquivo na pasta .gitLegit
 -- genCommit :: 
