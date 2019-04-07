@@ -41,6 +41,14 @@ createFolder = do
     System.Directory.createDirectoryIfMissing True "./.legit/archive"
     System.Directory.createDirectoryIfMissing True "./.legit/commits"
 
+checkAddExistance = do
+    let a = System.Directory.doesFileExist "./.legit/archive/add.txt"
+    a == (True :: IO Bool)
+    
 -- cria e escreve no arquivo de git add
 createAndWriteAddFile :: String -> String -> IO ()     -- funfa se existir a pasta
 createAndWriteAddFile c1 c2 = writeAddHashToFile "./.legit/archive/add.txt" c1 c2
+
+legitAdd = do
+    createFolder
+    -- if (checkAddExistance) 
