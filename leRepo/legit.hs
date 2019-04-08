@@ -1,17 +1,18 @@
 import System.IO
 import System.Directory
+import Data.Time.Clock
 -- import qualified Data.ByteString.Lazy as BS
 -- need to install cryptohash dependency
 -- import qualified Crypto.Hash.SHA1 as SHA1
-
-data UnixTime
+-- data UnixTime
 
 -- ################################################ GIT ADD ############################################
+
 -- Função que adiciona os arquivos para sere commitados
 legitAdd :: String -> IO () 
 legitAdd filesNames = do
-    removeFiles
     createFolder
+    removeFiles
     readFiles (words filesNames)
 
 -- Cria a estrutura de pastas, se não existir. Caso exista, não faz nada.
@@ -19,6 +20,7 @@ createFolder ::  IO ()
 createFolder = do
     System.Directory.createDirectoryIfMissing True "./.legit/archive"
     System.Directory.createDirectoryIfMissing True "./.legit/commits"
+    System.Directory.createDirectoryIfMissing True "./.legit/repository"
 
 -- Apaga arquivos do diretório de armazenamento de commits
 removeFiles :: IO ()
@@ -52,8 +54,46 @@ readFiles (h:t) = do
 
 legitCommit :: String -> IO ()
 legitCommit commitMessage = do
-    files <- getDirectoryContents  "./.legit/archive"
-    print (head files)
+    filesToAdd <- getDirectoryContents  "./.legit/archive"
+    commitingFiles filesToAdd
+    writeFile ("./.legit/repository/.commitMessage") commitMessage
+    let commitFolder = ("./.legit/commits/" ++ commitMessage)
+    System.Directory.createDirectoryIfMissing True commitFolder
+    saveHistory commitFolder
+
+saveHistory :: String -> IO ()
+saveHistory commitFolder = do
+    filesToAdd <- getDirectoryContents  "./.legit/repository"
+    savingCommit filesToAdd commitFolder
+
+savingCommit :: [String] -> String -> IO ()
+savingCommit  [ ] _ = putStrLn "Complete Commiting"
+savingCommit  (h:t) commitFolder = do
+    if (h /= "." && h /= "..") then recursiveSave h t commitFolder
+    else savingCommit t commitFolder
+
+
+recursiveSave :: String -> [String] -> String -> IO ()
+recursiveSave head tail commitFolder = do
+    let name = head
+    contents <- readFile ("./.legit/repository/" ++ head)
+    writeFile (commitFolder ++ "/" ++ name) contents
+    savingCommit tail commitFolder
+
+
+commitingFiles :: [String] -> IO ()
+commitingFiles [ ] = putStrLn "Complete Commiting"
+commitingFiles (h:t) = do
+    if (h /= "." && h /= "..") then recursiveAdd h t
+    else commitingFiles t 
+
+recursiveAdd :: String -> [String] -> IO ()
+recursiveAdd head tail = do
+    let name = head
+    contents <- readFile ("./.legit/archive/" ++ head)
+    writeFile ("./.legit/repository/" ++ name) contents
+    commitingFiles tail
+    
     
 
 -- readFiles :: [String] -> IO ()
