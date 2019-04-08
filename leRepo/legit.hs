@@ -6,31 +6,48 @@ import System.Directory
 
 data UnixTime
 
-
+-- ################################################ GIT ADD ############################################
 -- Função que adiciona os arquivos para sere commitados
 legitAdd :: String -> IO () 
 legitAdd filesNames = do
+    -- removeFiles
     createFolder
     readFiles (words filesNames)
 
-
-
 -- Cria a estrutura de pastas, se não existir. Caso exista, não faz nada.
-createFolder ::  IO ()  -- Funcionando
+createFolder ::  IO () 
 createFolder = do
     System.Directory.createDirectoryIfMissing True "./.legit/archive"
     System.Directory.createDirectoryIfMissing True "./.legit/commits"
 
+-- Apaga arquivos do diretório de armazenamento de commits
+removeFiles :: IO ()
+removeFiles = do
+    files <- getDirectoryContents "./.legit/archive"
+    cleanArchive files
 
 
+-- cleanArchive :: [String] -> IO ()
+-- cleanArchive [ ] = putStrLn "Complete Cleaning"
+-- cleanArchive (h:s) = 
+
+-- Recebe a string contendo os nomes dos arquivos a serem adicionas e os salva na pasta ".legit/archive"
 readFiles :: [String] -> IO ()
-readFiles [ ] = putStrLn "Complete"
+readFiles [ ] = putStrLn "Complete Reading"
 readFiles (h:t) = do
     let name = h 
     contents <- readFile name 
     writeFile ("./.legit/archive/" ++ name) contents
     readFiles t
 
+
+-- ################################################ GIT COMMIT ############################################
+
+legitCommit :: String -> IO ()
+legitCommit commitMessage = do
+    files <- getDirectoryContents  "./.legit/archive"
+    print (head files)
+    
 
 -- readFiles :: [String] -> IO ()
 -- readFiles [ ] = putStrLn "Cabô"
@@ -56,43 +73,43 @@ readFiles (h:t) = do
 --     writeFiles t
     
 
-split :: String -> Char -> [String]
-split [] delim = [""]
-split (c:cs) delim
-    | c == delim = "" : rest
-    | otherwise = (c : head rest) : tail rest
-    where
-        rest = split cs delim
+-- split :: String -> Char -> [String]
+-- split [] delim = [""]
+-- split (c:cs) delim
+--     | c == delim = "" : rest
+--     | otherwise = (c : head rest) : tail rest
+--     where
+--         rest = split cs delim
 
--- verifica se o arquivo ja fora adicionado no legit antes
--- chamar o segundo argumento com a funcao `lines x`
-verifyPresenceInLegit :: String -> [String] -> Bool     -- funfando nice
-verifyPresenceInLegit a [] = False
-verifyPresenceInLegit a (h:t) = if (h == a) then True else verifyPresenceInLegit a t
+-- -- verifica se o arquivo ja fora adicionado no legit antes
+-- -- chamar o segundo argumento com a funcao `lines x`
+-- verifyPresenceInLegit :: String -> [String] -> Bool     -- funfando nice
+-- verifyPresenceInLegit a [] = False
+-- verifyPresenceInLegit a (h:t) = if (h == a) then True else verifyPresenceInLegit a t
 
--- verifica se existe diferença entre o arquivo atual e na pasta legit
-verifyDiferenceInLegit :: String -> String -> Bool     -- funfando nice
-verifyDiferenceInLegit a b = a == b
+-- -- verifica se existe diferença entre o arquivo atual e na pasta legit
+-- verifyDiferenceInLegit :: String -> String -> Bool     -- funfando nice
+-- verifyDiferenceInLegit a b = a == b
 
-genAddHash :: String -> String -> String    -- funfando
-genAddHash a b = a ++ ":" ++ b
+-- genAddHash :: String -> String -> String    -- funfando
+-- genAddHash a b = a ++ ":" ++ b
 
--- talvez esse c2 tenha que mudar pra IO string, o que pode dificultar um pouco as coisas
-writeAddHashToFile :: String -> String -> String -> IO ()   -- funfando
-writeAddHashToFile filename s1 s2 = do
-    a <- openFile filename AppendMode
-    let c = genAddHash s1 s2
-    hPutStrLn a c
-    hClose a 
+-- -- talvez esse c2 tenha que mudar pra IO string, o que pode dificultar um pouco as coisas
+-- writeAddHashToFile :: String -> String -> String -> IO ()   -- funfando
+-- writeAddHashToFile filename s1 s2 = do
+--     a <- openFile filename AppendMode
+--     let c = genAddHash s1 s2
+--     hPutStrLn a c
+--     hClose a 
 
 
 
--- checkAddExistance = do
---     let a = System.Directory.doesFileExist "./.legit/archive/add.txt"
---     a == (True :: IO Bool)
+-- -- checkAddExistance = do
+-- --     let a = System.Directory.doesFileExist "./.legit/archive/add.txt"
+-- --     a == (True :: IO Bool)
     
--- cria e escreve no arquivo de git add
-createAndWriteAddFile :: String -> String -> IO ()     -- funfa se existir a pasta
-createAndWriteAddFile c1 c2 = writeAddHashToFile "./.legit/archive/add.txt" c1 c2
+-- -- cria e escreve no arquivo de git add
+-- createAndWriteAddFile :: String -> String -> IO ()     -- funfa se existir a pasta
+-- createAndWriteAddFile c1 c2 = writeAddHashToFile "./.legit/archive/add.txt" c1 c2
 
 
