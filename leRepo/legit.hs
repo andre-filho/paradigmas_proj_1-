@@ -10,7 +10,7 @@ data UnixTime
 -- Função que adiciona os arquivos para sere commitados
 legitAdd :: String -> IO () 
 legitAdd filesNames = do
-    -- removeFiles
+    removeFiles
     createFolder
     readFiles (words filesNames)
 
@@ -26,10 +26,17 @@ removeFiles = do
     files <- getDirectoryContents "./.legit/archive"
     cleanArchive files
 
+cleanArchive :: [String] -> IO ()
+cleanArchive [ ] = putStrLn "Complete Cleaning"
+cleanArchive (h:t) = do
+    if (h /= "." && h /= "..") then recursiveClean h t
+    else cleanArchive t
 
--- cleanArchive :: [String] -> IO ()
--- cleanArchive [ ] = putStrLn "Complete Cleaning"
--- cleanArchive (h:s) = 
+recursiveClean :: String -> [String] -> IO ()
+recursiveClean head tail = do
+    removeFile ("./.legit/archive/" ++ head)
+    cleanArchive tail
+    
 
 -- Recebe a string contendo os nomes dos arquivos a serem adicionas e os salva na pasta ".legit/archive"
 readFiles :: [String] -> IO ()
